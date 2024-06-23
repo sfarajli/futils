@@ -9,8 +9,8 @@ int mode_parser(char * str, mode_t * mode)
 {
 	char * end;
 	mode_t octal;
-	int person = 0;
-	int perm = 0;
+	int person;
+	int perm;
 	char sign;
 
 	octal = strtol(str, &end, 8);
@@ -24,6 +24,7 @@ int mode_parser(char * str, mode_t * mode)
 
 
 again:
+	person = 0;
 	for (;; str++) {
 		switch(*str) {
 		case('a'):
@@ -49,6 +50,7 @@ again:
 		person = 0777;
 
 next:
+	perm = 0;
 	sign = *str++;
 
 	for(; *str; str++) {
@@ -66,15 +68,40 @@ next:
 			continue;
 
 		case('u'):
-			perm |= *mode | S_IRUSR | S_IWUSR | S_IXUSR;
+			if(*mode & S_IRUSR)
+				perm |= S_IRUSR | S_IRGRP | S_IROTH;
+
+			if(*mode & S_IWUSR)
+				perm |= S_IWUSR | S_IWGRP | S_IWOTH;
+
+			if(*mode & S_IXUSR)
+				perm |= S_IXUSR | S_IXGRP | S_IXOTH;
+
 			continue;
 
+
 		case('g'):
-			perm |= *mode | S_IRGRP | S_IWGRP | S_IXGRP;
+			if(*mode & S_IRGRP)
+				perm |= S_IRUSR | S_IRGRP | S_IROTH;
+
+			if(*mode & S_IWGRP)
+				perm |= S_IWUSR | S_IWGRP | S_IWOTH;
+
+			if(*mode & S_IXGRP)
+				perm |= S_IXUSR | S_IXGRP | S_IXOTH;
+
 			continue;
 
 		case('o'):
-			perm |= *mode | S_IROTH | S_IWOTH | S_IXOTH;
+			if(*mode & S_IROTH)
+				perm |= S_IRUSR | S_IRGRP | S_IROTH;
+
+			if(*mode & S_IWOTH)
+				perm |= S_IWUSR | S_IWGRP | S_IWOTH;
+
+			if(*mode & S_IXOTH)
+				perm |= S_IXUSR | S_IXGRP | S_IXOTH;
+
 			continue;
 		}
 		break;
@@ -83,15 +110,18 @@ next:
 
 	switch (sign) {
 		case('+'):
-			* mode |= perm | person;
+			* mode |= perm & person;
 			break;
 
 		case('-'):
-			* mode &= ~(perm | person);
+			* mode &= ~(perm & person);
 			break;
 
 		case('='):
-			* mode = perm | person;
+
+			*mode &= ~person; 		/* clear the bits of target user */
+			*mode |= person & perm;
+
 			break;
 
 		default:
@@ -105,10 +135,11 @@ next:
 		case(','):
 			goto again;
 
-		case('+'):				/* FALLTHROUGH */
-		case('='):				/* FALLTHROUGH */
-		case('-'):				/* FALLTHROUGH */
+		case('+'):	/* FALLTHROUGH */
+		case('='):	/* FALLTHROUGH */
+		case('-'):	/* FALLTHROUGH */
 			goto next;
 		}
 
+	return 1;
 }
