@@ -4,7 +4,7 @@
 #include <sys/types.h>
 
 
-int mode_parser(char * str, mode_t * mode);
+int parsemode(char * str, mode_t * mode);
 
 
 #endif
