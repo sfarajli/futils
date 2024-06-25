@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include "parse.h"
+#include "../include/parse.h"
 
 
 int parsemode(char * str, mode_t * mode)
