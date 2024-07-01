@@ -16,8 +16,8 @@ $(BIN): bin/%: %.o | bin
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 install: $(BIN)
-	mkdir -p "$(DESTDIR)$(BINPREFIX)"
-	cp -p bin/* "$(DESTDIR)$(BINPREFIX)"
+	mkdir -p $(DESTDIR)$(BINPREFIX)
+	cp -p bin/* $(DESTDIR)$(BINPREFIX)
 
 uninstall: 
 	rm -f $(patsubst bin/%, $(DESTDIR)$(BINPREFIX)/%, $(BIN))
