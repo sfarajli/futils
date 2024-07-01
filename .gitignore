@@ -1,2 +1,4 @@
 BUGS
 tests
+*.o
+bin
