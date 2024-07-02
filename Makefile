@@ -23,7 +23,7 @@ uninstall:
 	rm -f $(patsubst bin/%, $(DESTDIR)$(BINPREFIX)/%, $(BIN))
 
 bin:
-	mkdir bin
+	mkdir $@
 
 clean: 
 	rm -rf *.o bin
