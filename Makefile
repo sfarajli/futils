@@ -1,3 +1,5 @@
+CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -O2
+
 PREFIX 	  ?= /usr/local
 BINPREFIX ?= $(PREFIX)/bin
 
