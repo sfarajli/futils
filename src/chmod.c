@@ -10,6 +10,7 @@ int change_mode(char * path, mode_t mode);
 
 int R_flg = 0;
 int opterr = 0;		/* Deactivate getopt error message */
+char *mode_string = NULL;
 
 int main(int argc, char ** argv)
 {
@@ -21,16 +22,25 @@ int main(int argc, char ** argv)
 		switch(opt) {
 		case('R'):
 			R_flg++;
+			break;
 		case('?'):
 			if(optopt != 'r' && optopt != 'w' && optopt != 'x' &&
 			   optopt != 'X' && optopt != 's' && optopt != 't' ) {
 				fprintf(stderr, "invalid option -- %c \n", optopt);
 				return 1;
 			}
+			if (mode_string != NULL) {
+				fprintf(stderr, "More than file mode\n");
+				return 1;
+			}
+			mode_string = argv[optind-1];
 		}
 	}
 
-	if (parsemode(argv[optind], &mode)) {
+	if (mode_string == NULL)
+		mode_string = argv[optind];
+
+	if (parsemode(mode_string, &mode)) {
 		fprintf(stderr, "Couldn't parse given mode\n");
 		return 1;
 	}
