@@ -37,6 +37,11 @@ int main(int argc, char ** argv)
 		}
 	}
 
+	if (argc - optind == 0) {
+		fprintf(stderr, "Wrong amount of arguments \n");
+		return 1;
+	}
+
 	if (mode_string == NULL)
 		mode_string = argv[optind];
 
@@ -44,9 +49,6 @@ int main(int argc, char ** argv)
 		fprintf(stderr, "Couldn't parse given mode\n");
 		return 1;
 	}
-
-	if (argc - optind == 0)
-		fprintf(stderr, "Wrong amount of arguments \n");
 
 	for (int i = optind + 1; i < argc; i++) {
 		if (change_mode(argv[i], mode))
