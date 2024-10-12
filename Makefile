@@ -7,6 +7,7 @@ VPATH = src
 
 BIN = bin/chmod \
       bin/touch \
+      bin/mkdir
 
 
 all: $(BIN)
@@ -32,5 +33,5 @@ clean:
 
 .PHONY: all clear install uninstall
 
-bin/chmod: modeparser.o
-chmod.o modeparser.o: parse.h
+bin/chmod bin/mkdir: modeparser.o 
+mkdir.o chmod.o modeparser.o: parse.h
