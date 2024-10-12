@@ -7,6 +7,7 @@ VPATH = src
 
 BIN = bin/chmod \
       bin/touch \
+      bin/sync
 
 
 all: $(BIN)
