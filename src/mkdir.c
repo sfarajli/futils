@@ -14,7 +14,7 @@ static char *progname;
 static int p_flg = 0;
 static int v_flg = 0;
 
-int main(int argc, char ** argv) 
+int main(int argc, char ** argv)
 {
 	int retval = 0;
 	mode_t mode = 0777;
@@ -32,12 +32,11 @@ int main(int argc, char ** argv)
 		case 'm':
 			umask(0);
 			if (parsemode(optarg, &mode)) {
-				fprintf(stderr, "%s: failed to parse given mode '%s'\n",
-						progname, optarg);
+				fprintf(stderr, "%s: failed to parse given mode '%s'\n", progname, optarg);
 				return 1;
 			}
 			break;
-		default: 
+		default:
 			return 1;
 		}
 
@@ -45,8 +44,7 @@ int main(int argc, char ** argv)
 	argc -= optind;
 
 	if (argc == 0) {
-		fprintf(stderr, "%s: operand is missing\nSee man page for help.\n",
-				progname);
+		fprintf(stderr,"%s: operand is missing\nSee man page for help.\n", progname);
 		return 1;
 	}
 
