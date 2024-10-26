@@ -1,1 +1,2 @@
 chmod: src/chmod.o src/modeparser.o src/parse.h
+mkdir: src/mkdir.o src/modeparser.o src/parse.h
