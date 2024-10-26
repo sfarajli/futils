@@ -16,7 +16,7 @@ $(BIN):
 	${CC} ${LDFLAGS} -o ${.TARGET} ${.ALLSRC}
 
 .c.o:
-	${CC} ${CFLAGS} -c -o ${.TARGET} ${.ALLSRC}
+	${CC} ${CFLAGS} -c -o ${.TARGET} $<
 
 clean:
 	rm -f src/*.o $(BIN)
