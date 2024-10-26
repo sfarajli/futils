@@ -1,0 +1,1 @@
+chmod: src/chmod.o src/modeparser.o src/parse.h
