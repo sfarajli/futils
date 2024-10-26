@@ -1,4 +1,6 @@
 BUGS
 tests
 *.o
-bin
+chmod
+mkdir
+touch
