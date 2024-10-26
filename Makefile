@@ -5,7 +5,7 @@
 .ALLSRC ?= $^
 .TARGET ?= $@
 
-BIN= chmod mkdir
+BIN= chmod mkdir sync
 
 all: $(BIN)
 
