@@ -44,7 +44,7 @@ int main(int argc, char ** argv)
 	argc -= optind;
 
 	if (argc == 0) {
-		fprintf(stderr,"%s: operand is missing\nSee man page for help.\n", progname);
+		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
 		return 1;
 	}
 
