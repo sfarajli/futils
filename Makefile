@@ -5,7 +5,7 @@
 .ALLSRC ?= $^
 .TARGET ?= $@
 
-BIN= chmod
+BIN= chmod mkdir
 
 all: $(BIN)
 
