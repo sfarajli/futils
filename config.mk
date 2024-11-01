@@ -1,2 +1,4 @@
-CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -O2 -D_XOPEN_SOURCE=600
+CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -O2 \
+	-D_DEFAULT_SOURCE
+
 CC = cc
