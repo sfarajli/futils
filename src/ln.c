@@ -34,6 +34,8 @@ int main(int argc, char ** argv)
 		case 's':
 			s_flg = 1;
 			break;
+		default:
+			return 1;
 		}
 
 	argc -= optind;
