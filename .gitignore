@@ -6,3 +6,4 @@ mkdir
 touch
 sync
 ln
+rmdir
