@@ -2,4 +2,5 @@ chmod: src/chmod.o src/modeparser.o
 mkdir: src/mkdir.o src/modeparser.o
 sync: src/sync.o
 ln: src/ln.o
+rmdir: src/rmdir.o
 src/modeparser.o: src/parse.h
