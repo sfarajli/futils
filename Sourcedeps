@@ -3,4 +3,5 @@ mkdir: src/mkdir.o src/modeparser.o
 sync: src/sync.o
 ln: src/ln.o
 rmdir: src/rmdir.o
+mkfifo: src/mkfifo.o src/modeparser.o
 src/modeparser.o: src/parse.h
