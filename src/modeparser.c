@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "parse.h"
 
@@ -28,19 +27,16 @@ again:
 	who = 0;
 	for (;; str++) {
 		switch(*str) {
-		case('a'):
+		case 'a':
 			who = 0777;
 			continue;
-
-		case('u'):
+		case 'u':
 			who |= S_IRUSR | S_IWUSR | S_IXUSR;
 			continue;
-
-		case('g'):
+		case 'g':
 			who |= S_IRGRP | S_IWGRP | S_IXGRP;
 			continue;
-
-		case('o'):
+		case 'o':
 			who |= S_IROTH | S_IWOTH | S_IXOTH;
 			continue;
 		}
@@ -54,21 +50,19 @@ next:
 	perm = 0;
 	sign = *str++;
 
-	for(; *str; str++) {
+	for (; *str; str++) {
 		switch(*str) {
-		case('r'):
+		case 'r':
 			perm |= S_IRUSR | S_IRGRP | S_IROTH;
 			continue;
-
-		case('w'):
+		case 'w':
 			perm |= S_IWUSR | S_IWGRP | S_IWOTH;
 			continue;
 
-		case('x'):
+		case 'x':
 			perm |= S_IXUSR | S_IXGRP | S_IXOTH;
 			continue;
-
-		case('u'):
+		case 'u':
 			if(*mode & S_IRUSR)
 				perm |= S_IRUSR | S_IRGRP | S_IROTH;
 
@@ -79,9 +73,7 @@ next:
 				perm |= S_IXUSR | S_IXGRP | S_IXOTH;
 
 			continue;
-
-
-		case('g'):
+		case 'g':
 			if(*mode & S_IRGRP)
 				perm |= S_IRUSR | S_IRGRP | S_IROTH;
 
@@ -92,8 +84,7 @@ next:
 				perm |= S_IXUSR | S_IXGRP | S_IXOTH;
 
 			continue;
-
-		case('o'):
+		case 'o':
 			if(*mode & S_IROTH)
 				perm |= S_IRUSR | S_IRGRP | S_IROTH;
 
@@ -108,36 +99,31 @@ next:
 		break;
 	}
 
-
 	switch (sign) {
-		case('+'):
+		case '+':
 			* mode |= perm & who;
 			break;
-
-		case('-'):
+		case '-':
 			* mode &= ~(perm & who);
 			break;
-
-		case('='):
+		case '=':
 			*mode &= ~who; 		/* clear the bits of target user */
 			*mode |= who & perm;
-
 			break;
-
 		default:
 			return 1;
 	}
 
 	switch (*str) {
-		case('\0'):
+		case '\0':
 			return 0;
 
-		case(','):
+		case ',':
 			goto again;
 
-		case('+'):	/* FALLTHROUGH */
-		case('='):	/* FALLTHROUGH */
-		case('-'):	/* FALLTHROUGH */
+		case '+':	/* FALLTHROUGH */
+		case '=':	/* FALLTHROUGH */
+		case '-':	/* FALLTHROUGH */
 			goto next;
 		}
 

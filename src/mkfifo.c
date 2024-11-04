@@ -1,9 +1,9 @@
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <getopt.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <getopt.h>
+#include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "parse.h"
 

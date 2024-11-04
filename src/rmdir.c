@@ -1,10 +1,9 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <getopt.h>
 #include <errno.h>
-#include <stdlib.h>
+#include <getopt.h>
 #include <libgen.h>
+#include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 int remove_directory(char *);
 

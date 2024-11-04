@@ -17,7 +17,7 @@ int main(int argc, char ** argv)
 	int retval = 0;
 
 	int opt;
-	while((opt = getopt(argc, argv,"R")) != -1) {
+	while ((opt = getopt(argc, argv,"R")) != -1) {
 		switch(opt) {
 		case('R'):
 			R_flg++;
