@@ -50,7 +50,7 @@ int remove_directory(char * path)
 
 	if (p_flg) {
 		char * parent_dir = dirname(path);
-		if ((strcmp(parent_dir, "/" ) != 0) || (strcmp(parent_dir, "." ) != 0))
+		if ((strcmp(parent_dir, "/" ) != 0) && (strcmp(parent_dir, "." ) != 0))
 			if (remove_directory(parent_dir))
 				return 1;
 	}
