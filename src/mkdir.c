@@ -61,7 +61,7 @@ int make_directory(char* path, mode_t mode)
 		char * buf = strdup(path);
 		char * parent_dir= dirname(buf);
 
-		if (strcmp(parent_dir, path ) != 0)
+		if (strcmp(parent_dir, path) != 0)
 			if (make_directory(parent_dir, mode))
 				return 1;
 
