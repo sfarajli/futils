@@ -5,7 +5,6 @@
 
 #include "parse.h"
 
-
 int parsemode(char * str, mode_t * mode)
 {
 	char * end;
