@@ -8,3 +8,4 @@ sync
 ln
 rmdir
 mkfifo
+chgrp
