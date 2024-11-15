@@ -3,7 +3,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "parse.h"
+#include "util.h"
 
 int parsemode(char * str, mode_t * mode)
 {

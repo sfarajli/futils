@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "parse.h"
+#include "util.h"
 
 int change_mode(char * path, mode_t mode);
 

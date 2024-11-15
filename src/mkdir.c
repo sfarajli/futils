@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include "parse.h"
+#include "util.h"
 
 int make_directory(char *, mode_t);
 

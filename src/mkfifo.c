@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "parse.h"
+#include "util.h"
 
 static char *progname;
 
