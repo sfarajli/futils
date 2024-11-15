@@ -1,55 +1,71 @@
 #include <errno.h>
+#include <fcntl.h>
+#include <ftw.h>
+#include <getopt.h>
+#include <grp.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <grp.h>
-#include <unistd.h>
-#include <limits.h>
 #include <string.h>
-/*TODO: Sort alphabetically*/
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+
+#include "util.h"
+
+int change_group(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
 
 static char *progname;
-
-int h_flg = 0;
-int R_flg = 0;
-int H_flg = 0;
-int L_flg = 0;
-int P_flg = 0;
-
-int change_group(char *, gid_t);
+int chown_flags = 0;
+int retval = 0;
+gid_t gid;
 
 int main(int argc, char ** argv)
 {
-	int retval = 0;
-	gid_t gid;
 	struct group *gp;
 	progname = argv[0];
+	char recurse_mode = 'P'; 	/* Default recursion mode */
+	int R_flg = 0;
+	int h_flg = 0;
 
 	int opt;
 	while ((opt = getopt(argc, argv, "hRHLP")) != -1)
-
 		switch (opt) {
 		case 'h':
 			h_flg = 1;
+			chown_flags |= AT_SYMLINK_NOFOLLOW;
 			break;
 		case 'R':
 			R_flg = 1;
 			break;
 		case 'H':
-			H_flg = 1;
+			recurse_mode = 'H';
+			h_flg = 0;
 			break;
 		case 'L':
-			L_flg = 1;
+			recurse_mode = 'L';
+			h_flg = 0;
 			break;
 		case 'P':
-			P_flg = 1;
+			recurse_mode = 'P';
+			h_flg = 0;
 			break;
 		default:
 			fprintf(stderr,"See the man page for help.\n");
 			return 1;
 		}
+
+	if (R_flg && !h_flg) {
+		switch (recurse_mode) {
+		case 'L':
+			chown_flags &= ~AT_SYMLINK_NOFOLLOW;
+			break;
+		case 'H': /* FALLTHROUGH */
+		case 'P':
+			chown_flags |= AT_SYMLINK_NOFOLLOW;
+		}
+	}
 
 	argc -= optind;
 	argv += optind;
@@ -63,7 +79,7 @@ int main(int argc, char ** argv)
 	if ((gp = getgrnam(argv[0]))) {
 		gid = gp->gr_gid;
 	} else {
-		if (errno){
+		if (errno) {
 			fprintf(stderr,"%s: failed to get group name '%s': %s\n",
 					progname, argv[0], strerror(errno));
 			return 1;
@@ -78,26 +94,23 @@ int main(int argc, char ** argv)
 	}
 
 	for (int i = 1 ; i < argc; i++)
-		if(change_group(argv[i], gid))
-			retval = 1;
+		if (R_flg) {
+			if (walk(argv[i], change_group, recurse_mode))
+				fprintf(stderr, "%s: failed to open file '%s': %s\n",
+					progname, argv[i], strerror(errno));
+		} else {
+			change_group(argv[i], NULL, 1, 0);
+		}
 
 	return retval;
 }
 
-int change_group(char * path, gid_t gid)
+int change_group(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
 {
-	/*TODO: Add recursion*/
-	struct stat sb;
-	if (stat(path, &sb) == -1) {
-		fprintf(stderr,"%s: failed to stat '%s': %s\n", progname, path, strerror(errno));
-	       	return 1;
-	}
-
-	if (chown(path, sb.st_uid, gid)) {
+	if (fchownat(AT_FDCWD, fpath, -1, gid, chown_flags)) {
 		fprintf(stderr, "%s: failed to change group '%s': %s\n",
-			progname, path, strerror(errno));
-		return 1;
+			progname, fpath, strerror(errno));
+		retval = 1;
 	}
-
 	return 0;
 }
