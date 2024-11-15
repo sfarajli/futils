@@ -11,7 +11,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-
 #include "util.h"
 
 int change_group(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
