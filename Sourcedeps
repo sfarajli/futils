@@ -4,5 +4,6 @@ sync: src/sync.o
 ln: src/ln.o
 rmdir: src/rmdir.o
 mkfifo: src/mkfifo.o src/modeparser.o
-chgrp: src/chgrp.o
-src/modeparser.o: src/parse.h
+chgrp: src/chgrp.o src/walk.o
+
+src/walk.o src/modeparser.o src/chmod.o src/mkdir.o src/mkfifo.o src/chgrp.o: src/util.h
