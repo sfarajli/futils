@@ -9,3 +9,4 @@ ln
 rmdir
 mkfifo
 chgrp
+chown
