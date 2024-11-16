@@ -1,20 +1,20 @@
-#include <unistd.h>
 #include <errno.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <string.h>
 #include <fcntl.h>
 #include <ftw.h>
+#include <getopt.h>
 #include <grp.h>
-#include <stdlib.h>
 #include <limits.h>
 #include <pwd.h>
-/* TODO: sort alphabetically */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "util.h"
 
 int change_owner(const char * fpath, const struct stat * sb, int tflag, struct FTW * ftwbuf);
-int parse_owner(char * str); /*TODO: add function definition */
+int parse_owner(char * str);
 
 static char *progname;
 int chown_flags = 0;
@@ -76,7 +76,7 @@ int main(int argc, char ** argv)
 	}
 
 	if (parse_owner(argv[0])) {
-		fprintf(stderr, "%s: failed to parse given owner '%s'", progname, argv[0]);
+		fprintf(stderr, "%s: failed to parse owner '%s'\n", progname, argv[0]);
 		return 1;
 	}
 
@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
 
 int change_owner(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
 {
-	if (fchownat(AT_FDCWD, fpath, -1, gid, chown_flags)) {
+	if (fchownat(AT_FDCWD, fpath, uid, gid, chown_flags)) {
 		fprintf(stderr, "%s: failed to change group '%s': %s\n",
 			progname, fpath, strerror(errno));
 		retval = 1;
@@ -102,7 +102,7 @@ int change_owner(const char *fpath, const struct stat *sb, int tflag, struct FTW
 	return 0;
 }
 
-int parse(char * str)
+int parse_owner(char * str)
 {
 	char * buf;
 	struct group *gp;
@@ -116,8 +116,10 @@ int parse(char * str)
 		}
 	}
 
-	if (*str == '\0')
+	if (*str == '\0') {
+		uid = -1;
 		goto group;
+	}
 
 	errno = 0;
 	if ((pw = getpwnam(str))) {
@@ -135,6 +137,7 @@ group:
 		if (*str == '\0')		/* ':' or empty string cases */
 			return 1;
 
+		gid = -1;
 		return 0;			/* 'user:' and 'user' cases*/
 	}
 
