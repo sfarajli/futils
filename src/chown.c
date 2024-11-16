@@ -39,16 +39,10 @@ int main(int argc, char ** argv)
 		case 'R':
 			R_flg = 1;
 			break;
-		case 'H':
-			recurse_mode = 'H';
-			h_flg = 0;
-			break;
-		case 'L':
-			recurse_mode = 'L';
-			h_flg = 0;
-			break;
+		case 'H': /* FALLTHROUGH */
+		case 'L': /* FALLTHROUGH */
 		case 'P':
-			recurse_mode = 'P';
+			recurse_mode = opt;
 			h_flg = 0;
 			break;
 		default:
