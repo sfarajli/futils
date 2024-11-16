@@ -5,6 +5,10 @@
 #include <string.h>
 #include <fcntl.h>
 #include <ftw.h>
+#include <grp.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <pwd.h>
 /* TODO: sort alphabetically */
 
 #include "util.h"
@@ -95,5 +99,58 @@ int change_owner(const char *fpath, const struct stat *sb, int tflag, struct FTW
 			progname, fpath, strerror(errno));
 		retval = 1;
 	}
+	return 0;
+}
+
+int parse(char * str)
+{
+	char * buf;
+	struct group *gp;
+	struct passwd *pw;
+	int length = strlen(str);
+	int i;
+	for (i = 0; i < length; i++) {
+		if (str[i] == ':') {
+			str[i] = '\0';
+			break;
+		}
+	}
+
+	if (*str == '\0')
+		goto group;
+
+	errno = 0;
+	if ((pw = getpwnam(str))) {
+		uid = pw->pw_uid;
+	} else {
+		if (errno)
+			return 1;
+		uid = strtol(str, &buf, 10);
+		if (*buf != '\0' || uid >= UINT_MAX)
+			return 1;
+	}
+
+group:
+	if (i == length || i == length - 1) {
+		if (*str == '\0')		/* ':' or empty string cases */
+			return 1;
+
+		return 0;			/* 'user:' and 'user' cases*/
+	}
+
+	str += i + 1;
+
+	errno = 0;
+	if ((gp = getgrnam(str))) {
+		gid = gp->gr_gid;
+	} else {
+		if (errno)
+			return 1;
+
+		gid = strtol(str, &buf, 10);
+		if (*buf != '\0' || gid >= UINT_MAX)
+			return 1;
+	}
+
 	return 0;
 }
