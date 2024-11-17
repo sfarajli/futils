@@ -1,54 +1,102 @@
+#include <errno.h>
 #include <fcntl.h>
+#include <ftw.h>
 #include <getopt.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#include <sys/types.h>
 
 #include "util.h"
 
-int change_mode(char * path, mode_t mode);
+int change_mod(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf);
 
-int R_flg = 0;
-int opterr = 0;		/* Deactivate getopt error message */
+static char * progname;
+char * mode_str = NULL;
+int retval = 0;
 
 int main(int argc, char ** argv)
 {
-	mode_t mode;
-	int retval = 0;
+	progname = argv[0];
+	int R_flg = 0;
 
+	char * tmp;
 	int opt;
-	while ((opt = getopt(argc, argv,"R")) != -1) {
+	while ((opt = getopt(argc, argv,"RrwxXst")) != -1) {
 		switch(opt) {
-		case('R'):
+		case 'R':
 			R_flg++;
-		case('?'):
-			if(optopt != 'r' && optopt != 'w' && optopt != 'x' &&
-			   optopt != 'X' && optopt != 's' && optopt != 't' ) {
-				fprintf(stderr, "invalid option -- %c \n", optopt);
+			break;
+		case 'r':
+		case 'w':
+		case 'x':
+		case 'X':
+		case 's':
+		case 't':
+			if (mode_str) {
+				fprintf(stderr, "%s: more than one mode given\n", progname);
+				/* FIXME: output better error message */
 				return 1;
 			}
+			tmp = argv[optind - 1];
+			if (tmp[strlen(tmp) - 1] == opt)
+				mode_str = argv[optind - 1];
+			break;
+		default:
+			fprintf(stderr, "See the man page for help.\n");
+			return 1;
 		}
 	}
 
-	if (parsemode(argv[optind], &mode)) {
-		fprintf(stderr, "Couldn't parse given mode\n");
+	argc -= optind;
+	argv += optind;
+
+	if (!mode_str) {
+		mode_str = argv[0];
+		argc--;
+		argv++;
+	}
+
+	if (argc == 0) {
+		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
 		return 1;
 	}
 
-	if (argc - optind == 0)
-		fprintf(stderr, "Wrong amount of arguments \n");
+	umask(0);
+	for (int i = 0; i < argc; i++) {
+		if (R_flg) {
+			if (walk(argv[i], change_mod, 'H'))
+				fprintf(stderr, "%s: failed to open file '%s': %s\n",
+					progname, argv[i], strerror(errno));
+		} else {
+			struct stat sb;
+			if (stat(argv[i], &sb)) {
+				fprintf(stderr, "%s: failed to stat file '%s': %s\n",
+					progname, argv[i], strerror(errno));
+				return 1;
+			}
 
-	for (int i = optind + 1; i < argc; i++) {
-		if (change_mode(argv[i], mode))
-			retval = 1;
+			change_mod(argv[i], &sb, 0, 0);
+		}
 	}
 
 	return retval;
 }
 
-
-int change_mode(char * path, mode_t mode)
+int change_mod(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
 {
-	chmod(path, mode);
+	mode_t mode = sb->st_mode;
+	if (parsemode(mode_str, &mode)) {
+		fprintf(stderr, "%s: failed to parse given mode '%s'\n",
+				progname, mode_str);
+		retval = 1;
+	}
+
+	if (fchmodat(AT_FDCWD, fpath, mode, 0)) {
+		fprintf(stderr, "%s: failed to change mode '%s': %s\n",
+			progname, fpath, strerror(errno));
+		retval = 1;
+	}
+
 	return 0;
 }
