@@ -74,7 +74,7 @@ int main(int argc, char ** argv)
 		return 1;
 	}
 
-	for (int i = 1 ; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 		if (R_flg) {
 			if (walk(argv[i], change_owner, recurse_mode))
 				fprintf(stderr, "%s: failed to open file '%s': %s\n",
