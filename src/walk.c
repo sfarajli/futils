@@ -18,9 +18,10 @@ int walk(char * path,
 	case 'L':
 		flags &= ~FTW_PHYS;
 		break;
-	case 'H': /* FALLTHROUGH */
+	case 'H': 
 		if ((path = realpath(path, NULL)) == NULL) /* Dereference only the path argument */
 			return 1;
+		/* FALLTHROUGH */
 	case 'P':
 		flags |= FTW_PHYS;
 	}
