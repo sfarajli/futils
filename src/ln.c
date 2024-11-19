@@ -58,7 +58,7 @@ int main(int argc, char ** argv)
 				progname, argv[argc - 1], strerror(errno));
 			return 1;
 		}
-	} else if (argc > 3) {
+	} else if (argc > 2) {
 		fprintf(stderr,"%s: invalid usage\nSee the man page for help.\n", progname);
 		return 1;
 	}
