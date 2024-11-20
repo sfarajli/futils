@@ -11,7 +11,7 @@ int walk(char * path,
                int (*func) (const char * fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf),
                char mode)
 {
-	int flags = FTW_PHYS;
+	int flags = FTW_PHYS | FTW_DEPTH;
 	errno = 0;
 
 	switch (mode) {
