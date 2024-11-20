@@ -8,4 +8,6 @@ chown: src/chown.o src/walk.o
 chmod: src/chmod.o src/walk.o src/modeparser.o
 rm: src/rm.o src/walk.o
 
+true: src/true.o
+
 src/walk.o src/modeparser.o src/chmod.o src/mkdir.o src/mkfifo.o src/chgrp.o src/chown.o: src/util.h
