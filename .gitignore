@@ -11,4 +11,5 @@ mkfifo
 chgrp
 chown
 rm
+true
 TODO
