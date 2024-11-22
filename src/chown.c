@@ -13,23 +13,21 @@
 
 #include "util.h"
 
-int change_owner(const char * fpath, const struct stat * sb, int tflag, struct FTW * ftwbuf);
-int parse_owner(char * str);
+static int change_owner(const char *, const struct stat *, int, struct FTW *);
+static int parse_owner(char *);
 
-static char *progname;
-int chown_flags = 0;
-int retval = 0;
-uid_t uid;
-gid_t gid;
-
-int R_flg = 0;
-int h_flg = 0;
+static int chown_flags = 0;
+static int retval = 0;
+static int R_flg = 0;
+static int h_flg = 0;
+static uid_t uid;
+static gid_t gid;
 
 int
 main(int argc, char ** argv)
 {
-	progname = argv[0];
 	char recurse_mode = 'P'; 	/* Default recursion mode */
+	progname = argv[0];
 
 	int opt;
 	while ((opt = getopt(argc, argv, "hRHLP")) != -1)
@@ -52,6 +50,9 @@ main(int argc, char ** argv)
 			return 1;
 		}
 
+	argc -= optind;
+	argv += optind;
+
 	if (R_flg && !h_flg) {
 		switch (recurse_mode) {
 		case 'L':
@@ -63,35 +64,27 @@ main(int argc, char ** argv)
 		}
 	}
 
-	argc -= optind;
-	argv += optind;
+	if (argc == 0 || argc == 1)
+		errprintf(1, ":operand is missing\nSee the man page for help");
 
-	if (argc == 0 || argc == 1) {
-		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
-		return 1;
-	}
-
-	if (parse_owner(argv[0])) {
-		fprintf(stderr, "%s: failed to parse owner '%s'\n", progname, argv[0]);
-		return 1;
-	}
+	if (parse_owner(argv[0]))
+		errprintf(1, ":failed to parse owner '%s'", argv[0]);
 
 	for (int i = 1; i < argc; i++)
-			walk(argv[i], change_owner, recurse_mode, R_flg);
+		walk(argv[i], change_owner, recurse_mode, R_flg);
 
 	return retval;
 }
 
 int
-change_owner(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
+change_owner(const char * path, const struct stat * sb, int tflag, struct FTW * ftwbuf)
 {
-	if (fchownat(AT_FDCWD, fpath, uid, gid, chown_flags)) {
-		fprintf(stderr, "%s: failed to change group '%s': %s\n",
-			progname, fpath, strerror(errno));
+	if (fchownat(AT_FDCWD, path, uid, gid, chown_flags)) {
+		errprintf(0, ":failed to change group '%s':", path);
 		retval = 1;
 	}
 
-	return 0;
+	return 0; /* Continue traversing */
 }
 
 int
@@ -102,6 +95,7 @@ parse_owner(char * str)
 	struct passwd *pw;
 	int length = strlen(str);
 	int i;
+
 	for (i = 0; i < length; i++) {
 		if (str[i] == ':') {
 			str[i] = '\0';
