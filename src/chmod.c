@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <fcntl.h>
 #include <ftw.h>
 #include <getopt.h>
@@ -9,18 +8,18 @@
 
 #include "util.h"
 
-int change_mod(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf);
+static int change_mode(const char *, const struct stat *, int, struct FTW *);
 
-static char * progname;
-char * mode_str = NULL;
-int retval = 0;
+static int retval = 0;
+static char * mode_str = NULL;
 
-int main(int argc, char ** argv)
+int
+main(int argc, char ** argv)
 {
-	progname = argv[0];
-	int R_flg = 0;
-
 	char * tmp;
+	int R_flg = 0;
+	progname = argv[0];
+
 	int opt;
 	while ((opt = getopt(argc, argv,"RrwxXst")) != -1) {
 		switch(opt) {
@@ -33,18 +32,16 @@ int main(int argc, char ** argv)
 		case 'X':
 		case 's':
 		case 't':
-			if (mode_str) {
-				fprintf(stderr, "%s: more than one mode given\n", progname);
+			if (mode_str)
+				errprintf(1, ":more than one mode given");
 				/* FIXME: output better error message */
-				return 1;
-			}
+
 			tmp = argv[optind - 1];
 			if (tmp[strlen(tmp) - 1] == opt)
 				mode_str = argv[optind - 1];
 			break;
 		default:
-			fprintf(stderr, "See the man page for help.\n");
-			return 1;
+			errprintf(1, "See the man page for help.");
 		}
 	}
 
@@ -58,32 +55,32 @@ int main(int argc, char ** argv)
 		argv++;
 	}
 
-	if (argc == 0) {
-		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
-		return 1;
-	}
+	if (argc == 0)
+		errprintf(1, ":operand is missing\nSee the man page for help");
 
+	/* FIXME: handle umask better*/
 	umask(0);
 	for (int i = 0; i < argc; i++)
-		walk(argv[i], change_mod, 'H', R_flg);
+		walk(argv[i], change_mode, 'H', R_flg);
 
 	return retval;
 }
 
-int change_mod(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
+int
+change_mode(const char *path, const struct stat *sb, int tflag, struct FTW * ftwbuf)
 {
 	mode_t mode = sb->st_mode;
+
 	if (parsemode(mode_str, &mode)) {
-		fprintf(stderr, "%s: failed to parse given mode '%s'\n",
-				progname, mode_str);
+		errprintf(0, ":failed to parse given mode '%s'", mode_str);
 		retval = 1;
 	}
 
-	if (fchmodat(AT_FDCWD, fpath, mode, 0)) {
-		fprintf(stderr, "%s: failed to change mode '%s': %s\n",
-			progname, fpath, strerror(errno));
+	if (fchmodat(AT_FDCWD, path, mode, 0)) {
+		errprintf(0, ":failed to change mode '%s':", path);
+			/* FIXME: output better diagnostics message */
 		retval = 1;
 	}
 
-	return 0;
+	return 0; /* Continue traversing */
 }
