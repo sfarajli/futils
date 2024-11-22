@@ -34,6 +34,7 @@ int main(int argc, char ** argv)
 			s_flg = 1;
 			break;
 		default:
+			fprintf(stderr,"See the man page for help.\n");
 			return 1;
 		}
 
