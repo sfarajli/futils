@@ -5,7 +5,7 @@
 
 #include "util.h"
 
-char * progname = NULL;
+char *progname = NULL;
 
 void
 errprintf(const int errval, char *msg, ...)

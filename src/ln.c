@@ -1,21 +1,22 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-static char *progname;
-int f_flg = 0;
-int s_flg = 0;
+#include "util.h"
 
-int main(int argc, char ** argv)
+static int f_flg = 0;
+static int s_flg = 0;
+
+int
+main(int argc, char **argv)
 {
+	struct stat sb;
+	int working_fd = AT_FDCWD;
 	int retval = 0;
 	int flags = 0;
-	int working_fd = AT_FDCWD;
-	char * target;
+	char *target;
 	progname = argv[0];
 
 	int opt;
@@ -34,35 +35,23 @@ int main(int argc, char ** argv)
 			s_flg = 1;
 			break;
 		default:
-			fprintf(stderr,"See the man page for help.\n");
-			return 1;
+			errprintf(1, "See the man page for help.");
 		}
 
 	argc -= optind;
 	argv += optind;
 
-	if (argc == 0 || argc == 1) {
-		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
-		return 1;
-	}
+	if (argc == 0 || argc == 1)
+		errprintf(1, ":operand is missing\nSee the man page for help");
 
-	struct stat sb;
-	if ((stat(argv[argc - 1], &sb) == -1) && errno != ENOENT) {
-		fprintf(stderr,"%s: failed to stat '%s': %s\n",
-				progname, argv[argc - 1], strerror(errno));
-	       	return 1;
-	}
+	if ((stat(argv[argc - 1], &sb) == -1) && errno != ENOENT)
+		errprintf(1, ":failed to stat '%s':", argv[argc - 1]);
 
 	if (S_ISDIR(sb.st_mode)) {
-		if ((working_fd = open(argv[argc - 1], O_RDONLY)) == -1) {
-			fprintf(stderr,"%s: failed to open '%s': %s\n",
-				progname, argv[argc - 1], strerror(errno));
-			return 1;
-		}
-	} else if (argc > 2) {
-		fprintf(stderr,"%s: invalid usage\nSee the man page for help.\n", progname);
-		return 1;
-	}
+		if ((working_fd = open(argv[argc - 1], O_RDONLY)) == -1)
+			errprintf(1, ":failed to open '%s':");
+	} else if (argc > 2)
+		errprintf(1, ":invalid usage\nSee the man page for help");
 
 	for (int i = 0; i < argc - 1; i++) {
 		if (S_ISDIR(sb.st_mode))
@@ -71,8 +60,7 @@ int main(int argc, char ** argv)
 			target = argv[argc - 1];
 
 		if (f_flg && unlinkat(working_fd, target, 0) < 0 && errno != ENOENT) {
-			fprintf(stderr, "%s: failed to unlink '%s': %s\n",
-				progname, argv[i], strerror(errno));
+			errprintf(0, ":failed to unlink '%s':", argv[i]);
 			retval = 1;
 			continue;
 		}
@@ -85,9 +73,7 @@ int main(int argc, char ** argv)
 				continue;
 		}
 
-		fprintf(stderr, "%s: failed to link '%s' -> '%s' : %s\n",
-			progname, argv[i], argv[argc - 1], strerror(errno));
-
+		errprintf(0, ":failed to link '%s' -> '%s':", argv[i], argv[argc - 1]);
 		retval = 1;
 	}
 

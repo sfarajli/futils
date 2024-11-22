@@ -8,13 +8,13 @@
 
 #include "util.h"
 
-int make_directory(char *, mode_t);
+static int make_directory(char *, mode_t);
 
-static char *progname;
 static int p_flg = 0;
 static int v_flg = 0;
 
-int main(int argc, char ** argv)
+int
+main(int argc, char **argv)
 {
 	int retval = 0;
 	mode_t mode = 0777;
@@ -31,22 +31,18 @@ int main(int argc, char ** argv)
 			break;
 		case 'm':
 			umask(0);
-			if (parsemode(optarg, &mode)) {
-				fprintf(stderr, "%s: failed to parse given mode '%s'\n", progname, optarg);
-				return 1;
-			}
+			if (parsemode(optarg, &mode))
+				errprintf(1, ":failed to parge given mode '%s'", optarg);
 			break;
 		default:
-			return 1;
+			errprintf(1, "See the man page for help.");
 		}
 
 	argv += optind;
 	argc -= optind;
 
-	if (argc == 0) {
-		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
-		return 1;
-	}
+	if (argc == 0)
+		errprintf(1, ":operand is missing\nSee the man page for help");
 
 	for (int i = 0; i < argc; i++)
 		if (make_directory(argv[i], mode))
@@ -55,11 +51,16 @@ int main(int argc, char ** argv)
 	return retval;
 }
 
-int make_directory(char* path, mode_t mode)
+int
+make_directory(char* path, mode_t mode)
 {
+	struct stat sb;
+	char *buf;
+	char *parent_dir;
+
 	if (p_flg) {
-		char * buf = strdup(path);
-		char * parent_dir= dirname(buf);
+		buf = strdup(path);
+		parent_dir= dirname(buf);
 
 		if (strcmp(parent_dir, path) != 0)
 			if (make_directory(parent_dir, mode))
@@ -75,13 +76,12 @@ int make_directory(char* path, mode_t mode)
 	}
 
 	if (errno == EEXIST && p_flg) {
-		struct stat sb;
 		stat(path, &sb);
 		if ((sb.st_mode & S_IFMT) == S_IFDIR)
 			return 0;
 	}
 
-	fprintf(stderr, "%s: failed to create directory '%s': %s\n",
-				progname, path, strerror(errno));
-	return 1;
+	errprintf(0, ":failed to create directory '%s':", path);
+
+	return 0;
 }

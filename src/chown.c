@@ -5,7 +5,6 @@
 #include <grp.h>
 #include <limits.h>
 #include <pwd.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -16,15 +15,15 @@
 static int change_owner(const char *, const struct stat *, int, struct FTW *);
 static int parse_owner(char *);
 
+static uid_t uid;
+static gid_t gid;
 static int chown_flags = 0;
 static int retval = 0;
 static int R_flg = 0;
 static int h_flg = 0;
-static uid_t uid;
-static gid_t gid;
 
 int
-main(int argc, char ** argv)
+main(int argc, char **argv)
 {
 	char recurse_mode = 'P'; 	/* Default recursion mode */
 	progname = argv[0];
@@ -46,8 +45,7 @@ main(int argc, char ** argv)
 			h_flg = 0;
 			break;
 		default:
-			fprintf(stderr,"See the man page for help.\n");
-			return 1;
+			errprintf(1, "See the man page for help.");
 		}
 
 	argc -= optind;
@@ -77,7 +75,7 @@ main(int argc, char ** argv)
 }
 
 int
-change_owner(const char * path, const struct stat * sb, int tflag, struct FTW * ftwbuf)
+change_owner(const char *path, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
 	if (fchownat(AT_FDCWD, path, uid, gid, chown_flags)) {
 		errprintf(0, ":failed to change group '%s':", path);
@@ -88,9 +86,9 @@ change_owner(const char * path, const struct stat * sb, int tflag, struct FTW * 
 }
 
 int
-parse_owner(char * str)
+parse_owner(char *str)
 {
-	char * buf;
+	char *buf;
 	struct group *gp;
 	struct passwd *pw;
 	int length = strlen(str);

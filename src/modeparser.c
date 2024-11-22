@@ -5,9 +5,10 @@
 
 #include "util.h"
 
-int parsemode(char * str, mode_t * mode)
+int
+parsemode(char *str, mode_t *mode)
 {
-	char * end;
+	char *end;
 	mode_t octal;
 	int who;
 	int perm;
@@ -18,7 +19,7 @@ int parsemode(char * str, mode_t * mode)
 		if (octal > 0777)
 			return 1;
 
-		* mode = octal;
+		*mode = octal;
 		return 0;
 	}
 
@@ -100,10 +101,10 @@ next:
 
 	switch (sign) {
 		case '+':
-			* mode |= perm & who;
+			*mode |= perm & who;
 			break;
 		case '-':
-			* mode &= ~(perm & who);
+			*mode &= ~(perm & who);
 			break;
 		case '=':
 			*mode &= ~who; 		/* clear the bits of target user */

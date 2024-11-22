@@ -1,15 +1,11 @@
-#include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/stat.h>
 
 #include "util.h"
 
-static char *progname;
-
-int main(int argc, char ** argv)
+int
+main(int argc, char **argv)
 {
 	int retval = 0;
 	mode_t mode = 0666;
@@ -20,29 +16,22 @@ int main(int argc, char ** argv)
 		switch (opt) {
 		case 'm':
 			umask(0);
-			if (parsemode(optarg, &mode)) {
-				fprintf(stderr, "%s: failed to parse given mode '%s'\n",
-						progname, optarg);
-				return 1;
-			}
+			if (parsemode(optarg, &mode))
+				errprintf(1, ":failed to parse given mode '%s'", optarg);
 			break;
 		default:
-			return 1;
+			errprintf(1, "See the man page for help.");
 		}
 
 	argv += optind;
 	argc -= optind;
 
-	if (argc == 0) {
-		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
-		return 1;
-	}
+	if (argc == 0)
+		errprintf(1, ":operand is missing\nSee the man page for help");
 
 	for (int i = 0; i < argc; i++) {
 		if (mkfifo(argv[i], mode)) {
-			fprintf(stderr, "%s: failed to create fifo '%s': %s\n",
-				progname, argv[i], strerror(errno));
-
+			errprintf(0, ":failed to create fifo '%s':", argv[i]);
 			retval = 1;
 		}
 	}

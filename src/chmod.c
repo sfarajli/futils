@@ -11,12 +11,12 @@
 static int change_mode(const char *, const struct stat *, int, struct FTW *);
 
 static int retval = 0;
-static char * mode_str = NULL;
+static char *mode_str = NULL;
 
 int
-main(int argc, char ** argv)
+main(int argc, char **argv)
 {
-	char * tmp;
+	char *tmp;
 	int R_flg = 0;
 	progname = argv[0];
 
@@ -67,7 +67,7 @@ main(int argc, char ** argv)
 }
 
 int
-change_mode(const char *path, const struct stat *sb, int tflag, struct FTW * ftwbuf)
+change_mode(const char *path, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
 	mode_t mode = sb->st_mode;
 

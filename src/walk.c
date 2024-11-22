@@ -9,11 +9,11 @@
 #define NOPENFD 3
 
 void
-walk(char * path,
+walk(char *path,
                int (*func) (const char *, const struct stat *, int, struct FTW *),
                char mode, int recurse)
 {
-	char * buf;
+	char *buf;
 	int nftw_flags = FTW_PHYS;
 	struct stat sb;
 	struct FTW ftwbuf;

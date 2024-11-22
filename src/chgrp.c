@@ -4,9 +4,7 @@
 #include <getopt.h>
 #include <grp.h>
 #include <limits.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -74,6 +72,7 @@ main(int argc, char **argv)
 
 		char *buf;
 		gid = strtol(argv[0], &buf, 10);
+
 		if (*buf != '\0' || gid >= UINT_MAX)
 			errprintf(1, ":invalid group '%s':", argv[0]);
 	}
