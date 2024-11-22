@@ -3,31 +3,52 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <errno.h>
 
 #include "util.h"
 
-int walk(char * path,
-               int (*func) (const char * fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf),
-               char mode)
+#define NOPENFD 3
+
+void
+walk(char * path,
+               int (*func) (const char *, const struct stat *, int, struct FTW *),
+               char mode, int recurse)
 {
-	int flags = FTW_PHYS;
-	errno = 0;
+	int nftw_flags = FTW_PHYS;
+	struct stat sb;
+	struct FTW ftwbuf;
+
+	if (!recurse) {
+		if (stat(path, &sb)) {
+			fprintf(stderr, "failed to stat given file %s\n", path);
+			return;
+		}
+
+		ftwbuf.level = 0;
+		ftwbuf.base = 0;
+
+		/* TODO: add type flag */
+		(void)func(path, &sb, 0, &ftwbuf);
+
+		return;
+	}
+
 
 	switch (mode) {
 	case 'L':
-		flags &= ~FTW_PHYS;
+		nftw_flags &= ~FTW_PHYS;
 		break;
-	case 'H': 
-		if ((path = realpath(path, NULL)) == NULL) /* Dereference only the path argument */
-			return 1;
+	case 'H':
+		if ((path = realpath(path, NULL)) == NULL) { /* Dereference only the path argument for H flag */
+			fprintf(stderr, "failed to dereference given file '%s'", path);
+			return;
+		}
 		/* FALLTHROUGH */
 	case 'P':
-		flags |= FTW_PHYS;
+		nftw_flags |= FTW_PHYS;
 	}
 
-	if (nftw(path, func, 3, flags))
-		return 1;
+	if (nftw(path, func, NOPENFD, nftw_flags))
+		fprintf(stderr, "failed to walk file '%s'\n", path);
 
-	return 0;
+	return;
 }
