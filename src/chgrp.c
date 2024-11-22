@@ -13,20 +13,20 @@
 
 #include "util.h"
 
-int change_group(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
+static int change_group(const char *, const struct stat *, int, struct FTW *);
 
-static char *progname;
-int chown_flags = 0;
-int retval = 0;
-gid_t gid;
+static int chown_flags = 0;
+static int retval = 0;
+static gid_t gid;
 
-int main(int argc, char ** argv)
+int
+main(int argc, char **argv)
 {
-	struct group *gp;
-	progname = argv[0];
-	char recurse_mode = 'P'; 	/* Default recursion mode */
 	int R_flg = 0;
 	int h_flg = 0;
+	char recurse_mode = 'P'; 	/* Default recursion mode */
+	struct group *gp;
+	progname = argv[0];
 
 	int opt;
 	while ((opt = getopt(argc, argv, "hRHLP")) != -1)
@@ -45,8 +45,7 @@ int main(int argc, char ** argv)
 			h_flg = 0;
 			break;
 		default:
-			fprintf(stderr,"See the man page for help.\n");
-			return 1;
+			errprintf(1, "See the man page for help.");
 		}
 
 	if (R_flg && !h_flg) {
@@ -63,27 +62,20 @@ int main(int argc, char ** argv)
 	argc -= optind;
 	argv += optind;
 
-	if (argc == 0 || argc == 1) {
-		fprintf(stderr,"%s: operand is missing\nSee the man page for help.\n", progname);
-		return 1;
-	}
+	if (argc == 0 || argc == 1)
+		errprintf(1, ":operand is missing\nSee the man page for help");
 
 	errno = 0;
 	if ((gp = getgrnam(argv[0]))) {
 		gid = gp->gr_gid;
 	} else {
-		if (errno) {
-			fprintf(stderr,"%s: failed to get group name '%s': %s\n",
-					progname, argv[0], strerror(errno));
-			return 1;
-		}
+		if (errno)
+			errprintf(1, ":failed to get group name '%s':", argv[0]);
 
-		char * buf;
+		char *buf;
 		gid = strtol(argv[0], &buf, 10);
-		if (*buf != '\0' || gid >= UINT_MAX) {
-			fprintf(stderr,"%s: invalid group '%s'\n",progname, argv[0]);
-			return 1;
-		}
+		if (*buf != '\0' || gid >= UINT_MAX)
+			errprintf(1, ":invalid group '%s':", argv[0]);
 	}
 
 	for (int i = 1 ; i < argc; i++)
@@ -92,12 +84,13 @@ int main(int argc, char ** argv)
 	return retval;
 }
 
-int change_group(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
+int
+change_group(const char *path, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
-	if (fchownat(AT_FDCWD, fpath, -1, gid, chown_flags)) {
-		fprintf(stderr, "%s: failed to change group '%s': %s\n",
-			progname, fpath, strerror(errno));
+	if (fchownat(AT_FDCWD, path, -1, gid, chown_flags)) {
+		errprintf(0, ":failed to change group '%s':", path);
 		retval = 1;
 	}
-	return 0;
+
+	return 0; /* Continue traversing */
 }
