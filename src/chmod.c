@@ -51,6 +51,7 @@ int main(int argc, char ** argv)
 	argc -= optind;
 	argv += optind;
 
+	/* FIXME: ./chmod without any argument doesn't give an error */
 	if (!mode_str) {
 		mode_str = argv[0];
 		argc--;
@@ -63,22 +64,8 @@ int main(int argc, char ** argv)
 	}
 
 	umask(0);
-	for (int i = 0; i < argc; i++) {
-		if (R_flg) {
-			if (walk(argv[i], change_mod, 'H'))
-				fprintf(stderr, "%s: failed to open file '%s': %s\n",
-					progname, argv[i], strerror(errno));
-		} else {
-			struct stat sb;
-			if (stat(argv[i], &sb)) {
-				fprintf(stderr, "%s: failed to stat file '%s': %s\n",
-					progname, argv[i], strerror(errno));
-				return 1;
-			}
-
-			change_mod(argv[i], &sb, 0, 0);
-		}
-	}
+	for (int i = 0; i < argc; i++)
+		walk(argv[i], change_mod, 'H', R_flg);
 
 	return retval;
 }
