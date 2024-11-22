@@ -6,8 +6,8 @@
 
 int parsemode(char * str, mode_t * mode);
 
-int walk(char * path,
-               int (*) (const char * fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf),
-               char mode);
+void walk(char * path,
+               int (* func) (const char * path, const struct stat *sb, int tflag, struct FTW * ftwbuf),
+               char mode, int recurse);
 
 #endif
