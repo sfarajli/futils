@@ -22,12 +22,14 @@ int retval = 0;
 uid_t uid;
 gid_t gid;
 
-int main(int argc, char ** argv)
+int R_flg = 0;
+int h_flg = 0;
+
+int
+main(int argc, char ** argv)
 {
 	progname = argv[0];
 	char recurse_mode = 'P'; 	/* Default recursion mode */
-	int R_flg = 0;
-	int h_flg = 0;
 
 	int opt;
 	while ((opt = getopt(argc, argv, "hRHLP")) != -1)
@@ -75,28 +77,25 @@ int main(int argc, char ** argv)
 	}
 
 	for (int i = 1; i < argc; i++)
-		if (R_flg) {
-			if (walk(argv[i], change_owner, recurse_mode))
-				fprintf(stderr, "%s: failed to open file '%s': %s\n",
-					progname, argv[i], strerror(errno));
-		} else {
-			change_owner(argv[i], NULL, 1, 0);
-		}
+			walk(argv[i], change_owner, recurse_mode, R_flg);
 
 	return retval;
 }
 
-int change_owner(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
+int
+change_owner(const char *fpath, const struct stat *sb, int tflag, struct FTW * ftwbuf)
 {
 	if (fchownat(AT_FDCWD, fpath, uid, gid, chown_flags)) {
 		fprintf(stderr, "%s: failed to change group '%s': %s\n",
 			progname, fpath, strerror(errno));
 		retval = 1;
 	}
+
 	return 0;
 }
 
-int parse_owner(char * str)
+int
+parse_owner(char * str)
 {
 	char * buf;
 	struct group *gp;
