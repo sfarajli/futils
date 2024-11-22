@@ -13,6 +13,7 @@ walk(char * path,
                int (*func) (const char *, const struct stat *, int, struct FTW *),
                char mode, int recurse)
 {
+	char * buf;
 	int nftw_flags = FTW_PHYS;
 	struct stat sb;
 	struct FTW ftwbuf;
@@ -38,10 +39,12 @@ walk(char * path,
 		nftw_flags &= ~FTW_PHYS;
 		break;
 	case 'H':
-		if ((path = realpath(path, NULL)) == NULL) { /* Dereference only the path argument for H flag */
+		if ((buf = realpath(path, NULL)) == NULL) { /* Dereference only the path argument for H flag */
 			fprintf(stderr, "failed to dereference given file '%s'", path);
 			return;
 		}
+
+		path = buf;
 		/* FALLTHROUGH */
 	case 'P':
 		nftw_flags |= FTW_PHYS;
