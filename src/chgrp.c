@@ -87,13 +87,7 @@ int main(int argc, char ** argv)
 	}
 
 	for (int i = 1 ; i < argc; i++)
-		if (R_flg) {
-			if (walk(argv[i], change_group, recurse_mode))
-				fprintf(stderr, "%s: failed to open file '%s': %s\n",
-					progname, argv[i], strerror(errno));
-		} else {
-			change_group(argv[i], NULL, 1, 0);
-		}
+		walk(argv[i], change_group, recurse_mode, R_flg);
 
 	return retval;
 }
