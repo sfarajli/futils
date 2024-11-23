@@ -14,7 +14,7 @@ walk(char *path,
                char mode, int recurse)
 {
 	char *buf;
-	int nftw_flags = FTW_PHYS;
+	int nftw_flags = FTW_PHYS | FTW_DEPTH;
 	struct stat sb;
 	struct FTW ftwbuf;
 
