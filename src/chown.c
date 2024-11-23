@@ -69,7 +69,8 @@ main(int argc, char **argv)
 		errprintf(1, ":failed to parse owner '%s'", argv[0]);
 
 	for (int i = 1; i < argc; i++)
-		walk(argv[i], change_owner, recurse_mode, R_flg);
+		if (walk(argv[i], change_owner, recurse_mode, R_flg))
+			retval = 1;
 
 	return retval;
 }

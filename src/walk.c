@@ -8,7 +8,7 @@
 
 #define NOPENFD 3
 
-void
+int
 walk(char *path,
                int (*func) (const char *, const struct stat *, int, struct FTW *),
                char mode, int recurse)
@@ -20,8 +20,8 @@ walk(char *path,
 
 	if (!recurse) {
 		if (stat(path, &sb)) {
-			fprintf(stderr, "failed to stat given file %s\n", path);
-			return;
+			errprintf(0, ":failed to stat file '%s'", path);
+			return 1;
 		}
 
 		ftwbuf.level = 0;
@@ -30,7 +30,7 @@ walk(char *path,
 		/* TODO: add type flag */
 		(void)func(path, &sb, 0, &ftwbuf);
 
-		return;
+		return 1;
 	}
 
 
@@ -40,8 +40,8 @@ walk(char *path,
 		break;
 	case 'H':
 		if ((buf = realpath(path, NULL)) == NULL) { /* Dereference only the path argument for H flag */
-			fprintf(stderr, "failed to dereference given file '%s'", path);
-			return;
+			errprintf(0, ":failed to dereference file '%s'", path);
+			return 1;
 		}
 
 		path = buf;
@@ -50,8 +50,10 @@ walk(char *path,
 		nftw_flags |= FTW_PHYS;
 	}
 
-	if (nftw(path, func, NOPENFD, nftw_flags))
-		fprintf(stderr, "failed to walk file '%s'\n", path);
+	if (nftw(path, func, NOPENFD, nftw_flags)) {
+		errprintf(0, ":failed to walk file '%s'", path);
+		return 1;
+	}
 
-	return;
+	return 0;
 }

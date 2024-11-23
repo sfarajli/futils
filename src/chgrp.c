@@ -78,7 +78,8 @@ main(int argc, char **argv)
 	}
 
 	for (int i = 1 ; i < argc; i++)
-		walk(argv[i], change_group, recurse_mode, R_flg);
+		if (walk(argv[i], change_group, recurse_mode, R_flg))
+			retval = 1;
 
 	return retval;
 }

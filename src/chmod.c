@@ -61,7 +61,8 @@ main(int argc, char **argv)
 	/* FIXME: handle umask better*/
 	umask(0);
 	for (int i = 0; i < argc; i++)
-		walk(argv[i], change_mode, 'H', R_flg);
+		if (walk(argv[i], change_mode, 'H', R_flg))
+			retval = 1;
 
 	return retval;
 }
