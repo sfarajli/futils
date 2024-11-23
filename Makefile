@@ -21,4 +21,4 @@ $(BIN):
 clean:
 	rm -f src/*.o $(BIN)
 
-.PHONY: all
+.PHONY: all clean
