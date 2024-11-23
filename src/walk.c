@@ -30,7 +30,7 @@ walk(char *path,
 		/* TODO: add type flag */
 		(void)func(path, &sb, 0, &ftwbuf);
 
-		return 1;
+		return 0;
 	}
 
 
