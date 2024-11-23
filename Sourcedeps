@@ -6,5 +6,6 @@ mkfifo: src/mkfifo.o src/modeparser.o src/errprintf.o
 chgrp: src/chgrp.o src/walk.o src/errprintf.o
 chown: src/chown.o src/walk.o src/errprintf.o 
 chmod: src/chmod.o src/walk.o src/modeparser.o src/errprintf.o 
+rm: src/rm.o src/walk.o src/errprintf.o
 
-src/errprintf.o src/walk.o src/modeparser.o src/chmod.o src/mkdir.o src/mkfifo.o src/chgrp.o src/chown.o: src/util.h
+src/rm.o src/errprintf.o src/walk.o src/modeparser.o src/chmod.o src/mkdir.o src/mkfifo.o src/chgrp.o src/chown.o: src/util.h
