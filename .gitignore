@@ -10,4 +10,5 @@ rmdir
 mkfifo
 chgrp
 chown
+rm
 TODO
