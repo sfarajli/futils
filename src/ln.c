@@ -16,7 +16,6 @@ main(int argc, char **argv)
 	int working_fd = AT_FDCWD;
 	int retval = 0;
 	int flags = 0;
-	int isdir = 0;
 	char *target;
 	progname = argv[0];
 
@@ -45,6 +44,7 @@ main(int argc, char **argv)
 	if (argc == 0 || argc == 1)
 		errprintf(1, ":operand is missing\nSee the man page for help");
 
+	errno = 0;
 	if (stat(argv[argc - 1], &sb) == -1) {
 		if (errno != ENOENT)
 			errprintf(1, ":failed to stat '%s':", argv[argc - 1]);
@@ -55,7 +55,7 @@ main(int argc, char **argv)
 		errprintf(1, ":failed to open '%s':", argv[argc - 1]);
 	}
 
-	target = argv[argc - 1];
+	target = argv[argc - 1]; /* For non-directory */
 	for (int i = 0; i < argc - 1; i++) {
 		if (S_ISDIR(sb.st_mode)) 	/* Initial sb.st_mode is 0 in case stat call fails */
 			target = argv[i];
