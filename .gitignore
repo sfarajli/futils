@@ -10,4 +10,5 @@ mkfifo
 chgrp
 chown
 rm
+mv
 TODO
