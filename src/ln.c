@@ -12,10 +12,11 @@ static int s_flg = 0;
 int
 main(int argc, char **argv)
 {
-	struct stat sb;
+	struct stat sb = {0};
 	int working_fd = AT_FDCWD;
 	int retval = 0;
 	int flags = 0;
+	int isdir = 0;
 	char *target;
 	progname = argv[0];
 
@@ -44,20 +45,20 @@ main(int argc, char **argv)
 	if (argc == 0 || argc == 1)
 		errprintf(1, ":operand is missing\nSee the man page for help");
 
-	if ((stat(argv[argc - 1], &sb) == -1) && errno != ENOENT)
-		errprintf(1, ":failed to stat '%s':", argv[argc - 1]);
+	if (stat(argv[argc - 1], &sb) == -1) {
+		if (errno != ENOENT)
+			errprintf(1, ":failed to stat '%s':", argv[argc - 1]);
+		if (argc > 2)
+			errprintf(1, ":invalid usage\nSee the man page for help");
 
-	if (S_ISDIR(sb.st_mode)) {
-		if ((working_fd = open(argv[argc - 1], O_RDONLY)) == -1)
-			errprintf(1, ":failed to open '%s':");
-	} else if (argc > 2)
-		errprintf(1, ":invalid usage\nSee the man page for help");
+	} else if (S_ISDIR(sb.st_mode) && (working_fd = open(argv[argc - 1], O_RDONLY)) == -1) {
+		errprintf(1, ":failed to open '%s':", argv[argc - 1]);
+	}
 
+	target = argv[argc - 1];
 	for (int i = 0; i < argc - 1; i++) {
-		if (S_ISDIR(sb.st_mode))
+		if (S_ISDIR(sb.st_mode)) 	/* Initial sb.st_mode is 0 in case stat call fails */
 			target = argv[i];
-		else
-			target = argv[argc - 1];
 
 		if (f_flg && unlinkat(working_fd, target, 0) < 0 && errno != ENOENT) {
 			errprintf(0, ":failed to unlink '%s':", argv[i]);
@@ -66,14 +67,13 @@ main(int argc, char **argv)
 		}
 
 		if (s_flg) {
-		       	if (!symlinkat(argv[i], working_fd, target))
+			if (!symlinkat(argv[i], working_fd, target))
 				continue;
-		} else {
-			if (!linkat(AT_FDCWD, argv[i], working_fd, target, flags))
-				continue;
+		} else if (!linkat(AT_FDCWD, argv[i], working_fd, target, flags)) {
+			continue;
 		}
 
-		errprintf(0, ":failed to link '%s' -> '%s':", argv[i], argv[argc - 1]);
+		errprintf(0, ":failed to link '%s' to '%s':", argv[i], argv[argc - 1]);
 		retval = 1;
 	}
 
