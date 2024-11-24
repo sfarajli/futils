@@ -46,6 +46,10 @@ main(int argc, char **argv)
 			errprintf(1, "See the man page for help.");
 		}
 
+	argc -= optind;
+	argv += optind;
+
+
 	if (R_flg && !h_flg) {
 		switch (recurse_mode) {
 		case 'L':
@@ -56,9 +60,6 @@ main(int argc, char **argv)
 			chown_flags |= AT_SYMLINK_NOFOLLOW;
 		}
 	}
-
-	argc -= optind;
-	argv += optind;
 
 	if (argc == 0 || argc == 1)
 		errprintf(1, ":operand is missing\nSee the man page for help");
