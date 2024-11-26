@@ -1,6 +1,7 @@
 #include <unistd.h>
 
-int main(void)
+int
+main(void)
 {
 	sync();
 	return 0;
