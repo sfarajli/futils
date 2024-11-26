@@ -10,8 +10,8 @@
 
 int
 walk(char *path,
-               int (*func) (const char *, const struct stat *, int, struct FTW *),
-               char mode, int recurse)
+	int (*func) (const char *, const struct stat *, int, struct FTW *),
+	char mode, int recurse)
 {
 	char *buf;
 	int nftw_flags = FTW_PHYS | FTW_DEPTH;
