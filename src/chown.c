@@ -1,7 +1,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <ftw.h>
-#include <getopt.h>
 #include <grp.h>
 #include <limits.h>
 #include <pwd.h>

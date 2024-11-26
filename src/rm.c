@@ -1,6 +1,5 @@
 #include <errno.h>
 #include <ftw.h>
-#include <getopt.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>

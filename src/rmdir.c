@@ -1,4 +1,3 @@
-#include <getopt.h>
 #include <libgen.h>
 #include <string.h>
 #include <unistd.h>

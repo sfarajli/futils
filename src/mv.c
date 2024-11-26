@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <ftw.h>
 #include <fcntl.h>
-#include <getopt.h>
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 /* TODO: sort alphabetically */
 
 #include "util.h"
