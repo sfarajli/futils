@@ -12,4 +12,8 @@ chown
 rm
 mv
 basename
+false
+true
+link
+unlink
 TODO
