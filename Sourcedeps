@@ -9,5 +9,6 @@ chmod: src/chmod.o src/walk.o src/modeparser.o src/errprintf.o
 rm: src/rm.o src/walk.o src/errprintf.o
 mv: src/mv.o src/walk.o src/errprintf.o
 basename: src/basename.o src/errprintf.o
+false: src/false.o
 
 src/rm.o src/errprintf.o src/walk.o src/modeparser.o src/chmod.o src/mkdir.o src/mkfifo.o src/chgrp.o src/chown.o: src/util.h
