@@ -10,6 +10,7 @@ rm: src/rm.o src/walk.o src/errprintf.o
 mv: src/mv.o src/walk.o src/errprintf.o
 basename: src/basename.o src/errprintf.o
 false: src/false.o
+true: src/true.o
 link: src/link.o src/errprintf.o
 unlink: src/unlink.o src/errprintf.o
 
