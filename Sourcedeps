@@ -9,6 +9,7 @@ chmod: src/chmod.o src/walk.o src/modeparser.o src/errprintf.o
 rm: src/rm.o src/walk.o src/errprintf.o
 mv: src/mv.o src/walk.o src/errprintf.o
 basename: src/basename.o src/errprintf.o
+dirname: src/dirname.o src/errprintf.o
 false: src/false.o
 true: src/true.o
 link: src/link.o src/errprintf.o

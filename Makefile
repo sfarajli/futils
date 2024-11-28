@@ -5,7 +5,7 @@
 .ALLSRC ?= $^
 .TARGET ?= $@
 
-BIN= chmod mkdir sync ln rmdir mkfifo chgrp chown rm mv basename false true link unlink
+BIN= chmod mkdir sync ln rmdir mkfifo chgrp chown rm mv basename dirname false true link unlink
 
 all: $(BIN)
 
