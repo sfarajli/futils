@@ -22,10 +22,8 @@ main(int argc, char **argv)
 
 	base = basename(argv[1]);
 
-	if (suffix == NULL) {
-		printf("%s\n", base);
-		return 0;
-	}
+	if (suffix == NULL)
+		goto done;
 
 	for  (x = strlen(base), y = strlen(suffix); base[x] == suffix[y]; y--, x--) {
 		if (y == 0) {
@@ -35,6 +33,7 @@ main(int argc, char **argv)
 		}
 	}
 
+done:
 	printf("%s\n", base);
 	/* FIXME: Flushing might be necessary */
 	return 0;
