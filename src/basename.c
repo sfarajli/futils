@@ -36,5 +36,6 @@ main(int argc, char **argv)
 	}
 
 	printf("%s\n", base);
+	/* FIXME: Flushing might be necessary */
 	return 0;
 }
