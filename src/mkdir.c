@@ -71,7 +71,7 @@ make_directory(char* path, mode_t mode)
 
 	if (mkdir(path, mode) == 0) {
 		if (v_flg)
-			printf("%s: directory created '%s'\n",progname, path);
+			printf("%s: directory created '%s'\n", progname, path);
 		return 0;
 	}
 
