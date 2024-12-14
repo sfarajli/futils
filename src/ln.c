@@ -59,6 +59,7 @@ main(int argc, char **argv)
 		if (S_ISDIR(sb.st_mode)) 	/* Initial sb.st_mode is 0 in case stat call fails */
 			target = argv[i];
 
+		/*FIXME: unlinkat removes only files not directories */
 		if (f_flg && unlinkat(working_fd, target, 0) < 0 && errno != ENOENT) {
 			errprintf(0, ":failed to unlink '%s':", argv[i]);
 			retval = 1;
