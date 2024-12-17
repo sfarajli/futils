@@ -1,10 +1,9 @@
-#include <stdio.h>
-#include <ftw.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <ftw.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-/* TODO: sort alphabetically */
 
 #include "util.h"
 
@@ -19,8 +18,8 @@ main(int argc, char **argv)
 {
 	struct stat sb = {0};
 	char *lastarg;
-	int f_flg = 0;
-	int i_flg = 0;
+	// int f_flg = 0;
+	// int i_flg = 0;
 	int isdir = 0;
 	progname = argv[0];
 	/* TODO: add -i and -f flag mechanisms */
@@ -29,12 +28,12 @@ main(int argc, char **argv)
 	while ((opt = getopt(argc, argv, "if")) != -1)
 		switch (opt) {
 		case 'i':
-			i_flg = 1;
-			f_flg = 0;
+			// i_flg = 1;
+			// f_flg = 0;
 			break;
 		case 'f':
-			f_flg = 1;
-			i_flg = 0;
+			// f_flg = 1;
+			// i_flg = 0;
 			break;
 		default:
 			errprintf(1, "See the man page for help.");
