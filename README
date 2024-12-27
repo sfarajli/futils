@@ -1,0 +1,12 @@
+futils: utilities for unix-like systems
+=======================================
+futils is a simple implementation of posix utilities.
+
+Building futils
+---------------
+run 
+make
+
+Disclamer 
+----------
+this piece of software is still in development.
