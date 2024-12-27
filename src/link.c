@@ -5,6 +5,8 @@
 int
 main(int argc, char **argv)
 {
+	progname = argv[0];
+
 	if (argc != 3)
 		errprintf(1, ":Invalid usage\nSee the man page for help");
 

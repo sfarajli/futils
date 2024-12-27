@@ -6,6 +6,8 @@
 int
 main(int argc, char **argv)
 {
+	progname = argv[0];
+
 	if (argc != 2)
 		errprintf(1, ":operand is missing\nSee the man page for help");
 
