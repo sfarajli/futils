@@ -1,9 +1,4 @@
-# Fully posix complaint makefile
-
 .POSIX:
-
-.ALLSRC ?= $^
-.TARGET ?= $@
 
 BIN= chmod mkdir sync ln rmdir mkfifo chgrp chown rm mv basename dirname false true link unlink
 
@@ -13,10 +8,10 @@ include Sourcedeps
 include config.mk
 
 ${BIN}:
-	${CC} ${LDFLAGS} -o ${.TARGET} ${.ALLSRC}
+	${CC} ${LDFLAGS} -o $@ $^
 
 .c.o:
-	${CC} ${CFLAGS} -c -o ${.TARGET} $<
+	${CC} ${CFLAGS} -c -o $@ $<
 
 clean:
 	rm -f src/*.o ${BIN}
